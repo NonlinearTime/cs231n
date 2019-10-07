@@ -104,7 +104,7 @@ class TwoLayerNet(object):
     probs = exp_scores / np.sum(exp_scores,axis = 1, keepdims = True, dtype=np.float64)
     corect_scores = -np.log(probs[range(N),y], dtype=np.float64)
     data_loss = np.sum(corect_scores,dtype=np.float64) /N
-    reg_loss = 0.5 * reg * np.sum(W1*W1,dtype=np.float64) +  0.5 * reg * np.sum(W2*W2,dtype=np.float64)
+    reg_loss = reg * np.sum(W1*W1,dtype=np.float64) +  reg * np.sum(W2*W2,dtype=np.float64)
     loss = data_loss + reg_loss
     loss.astype(np.float64)
     #############################################################################
@@ -121,13 +121,13 @@ class TwoLayerNet(object):
     dscores = probs
     dscores[range(N),y] -= 1
     dscores /= N
-    grads['W2'] = np.dot(hidden_layer.T,dscores) + reg * W2
+    grads['W2'] = np.dot(hidden_layer.T,dscores) + 2 * reg * W2
     grads['b2'] = np.sum(dscores, axis=0, keepdims=True)
     
     dhidden = np.dot(dscores,W2.T)
     dhidden[hidden_layer <= 0 ] = 0
     
-    grads['W1'] = np.dot(X.T,dhidden) + reg * W1
+    grads['W1'] = np.dot(X.T,dhidden) + 2 * reg * W1
     grads['b1'] = np.sum(dhidden, axis=0,keepdims=True)
     #############################################################################
     #                              END OF YOUR CODE                             #
